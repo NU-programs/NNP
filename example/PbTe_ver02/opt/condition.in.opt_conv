@@ -1,0 +1,71 @@
+### choose the simulation type ###################
+### molecular dynamics        = md
+### geometry optimization     = opt
+### thermodynamic integration = ti
+### nudged elastic band       = neb
+### metadynamics              = meta 
+
+simulation_type opt
+
+### neural network ################################
+wb_infile       wb.0009600.ver02_run06.dat
+
+at_infile       POSCAR.Pb_vacancy.vasp
+#at_infile      CONTCAR.gb.vasp
+
+species         Pb Te
+cutoff          7.5
+ng2             8
+ng3             16
+n_hidden1       60
+n_hidden2       60
+max_natom       100
+max_lc_natom    300
+
+n_write         10000
+n_write_en      100
+energy_outfile  opt_energy.dat
+
+### conditions for specific purposes ##############
+sel_flag        no  # fix atoms
+
+### geometry optimization #########################
+opt_alg         cg_conv    # qn/cg/cg_lv
+step_length     3e-2
+step_length_lv  1e-3
+
+decay_rate      0.9
+en_diff         1e-8  # unit: eV
+fc_diff         1e-3  # unit: eV/ang.
+stress_diff     1.   # kbar
+n_iteration     10000
+n_linesearch    5
+wolfe_const1    1e-6
+H_init          1e-1
+
+### molecular dynamics ############################
+init_vel        init     # initial velocity = init/read
+vsc_step        1000
+md_condition    nvt_nh   # nvt_nh/nvt_lv
+md_step         100000
+md_time         1.   [fs]
+md_init_temp    300
+md_fin_temp     300
+md_mass         207.2 127.6
+
+th_mass         100.   # Nose-Hoover thermostat
+md_sigma        1.0    # langevin equation
+md_friction     0.5    # langevin equation
+
+### Thermodynamic integration #####################
+ti_infile       ../../POSCAR.opt.trans.vasp
+ha_energy0      -7900.1292977188
+fc_infile       ../../FORCE_CONSTANTS
+ti_lambda 1. 
+
+### nudged elastic band ###########################
+spring          0.1
+neb_mass        10.
+neb_time        0.1
+n_image         5
+obj_diff        1e-4
